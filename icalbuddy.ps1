@@ -83,7 +83,7 @@ $revisedEventList | ForEach-Object {
     $_ | Add-Member -MemberType NoteProperty -Name dow -Value $dow
 }
 
-$orderedEventList = $revisedEventList | Select-Object dow,date,time,title,notes
+$orderedEventList = $revisedEventList | Select-Object dow,date,time,title,notes -First 13
 
 <# Make the Schedule (event list) HTML Fragment to insert into the webpage #>
 
@@ -119,6 +119,7 @@ $css = '
     table {
         border-spacing: 0px;
         font-weight: bold;
+        width: 530px;
     }
 
     table td {padding: 7px;}
