@@ -36,6 +36,7 @@ function Get-CountOfEvents {
 
     $myObj
 }
+
 $updateTimeStamp = get-date -format HH:mm
 
 $eventList = icalBuddy -ic 'Ptown Schedule' -f -nc -npn -nrd -nnc 20 -n -iep 'title,datetime,notes' -ps '|,|' -po 'datetime,title,notes' -b ',' -df '%b %e %Y' -eed eventsToday+120
@@ -238,3 +239,4 @@ $html += '</script>'
     
 $html += "</body></html>"
 $html | Out-File $PSScriptRoot/index.html
+# $html | Out-File /Volumes/drivemecrazy/Tech/Scripts/SimpleScheduleBoard/index.html
