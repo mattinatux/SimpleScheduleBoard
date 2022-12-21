@@ -239,4 +239,3 @@ $html += '</script>'
     
 $html += "</body></html>"
 $html | Out-File $PSScriptRoot/index.html
-# $html | Out-File /Volumes/drivemecrazy/Tech/Scripts/SimpleScheduleBoard/index.html
