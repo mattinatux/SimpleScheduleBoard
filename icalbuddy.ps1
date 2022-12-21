@@ -36,8 +36,7 @@ function Get-CountOfEvents {
 
     $myObj
 }
-
-$todayFormatted = get-date -format 'dddd - MMMM d, yyy'
+$updateTimeStamp = get-date -format HH:mm
 
 $eventList = icalBuddy -ic 'Ptown Schedule' -f -nc -npn -nrd -nnc 20 -n -iep 'title,datetime,notes' -ps '|,|' -po 'datetime,title,notes' -b ',' -df '%b %e %Y' -eed eventsToday+120
 
@@ -124,8 +123,11 @@ $css = '
 
     table td {padding: 7px;}
 
-    tr:nth-child(even) { background-color:#FFEBCD; color: #00008B; }
-    tr:nth-child(odd) { background-color:#F0FFF0; color: #2E8B57; }
+    /* tr:nth-child(even) { background-color:#FFEBCD; color: #00008B; }
+    tr:nth-child(odd) { background-color:#F0FFF0; color: #2E8B57; } */
+
+    tr:nth-child(odd) { background-color:black; color: yellow; font-weight: normal; }
+    tr:nth-child(even) { background-color:white; color: black; }
 
     td:first-child {
         width: 48px;
@@ -138,17 +140,20 @@ $css = '
     }
 
     .todaydate { grid-area: todaydate;
-        background-color: #6495ED;
+        background-color: #FFF;
         font-weight: bold;
-        color: white;
+        color: black;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 1.8em;
+        border-bottom: black;
+        border-bottom-width: medium;
+        border-bottom-style: solid;
     }
 
     .numthiswk { grid-area: numthiswk; 
-        background-color: #00FFFF;
+        background-color: #FFB831;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -157,7 +162,7 @@ $css = '
     }
 
     .numnextwk { grid-area: numnextwk; 
-        background-color: #7FFFD4;
+        background-color: #00F3FF;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -180,9 +185,19 @@ $css = '
 
 $html = ""
 $html += "<html><head><title>"
-$html += "411 Board"
+$html += "411 Board ($updateTimeStamp)"
 $html += "</title>"
-$html += "<style>$CSS</style></head>"
+$html += "<style>$CSS</style>"
+
+<# Old style didn't work on Safari / iPad OS #>
+# $html += '<meta http-equiv="Refresh" content="3600">'
+
+<# Sets refresh to every 2 minutes (1000 = 1s) #>
+$html += "<script>function autoRefresh(){window.location=window.location.href;}setInterval('autoRefresh()',120000);</script>"
+
+<# Moment, used for date stamp on page #>
+$html += '<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>'
+$html += "</head>"
 $html += '<body><div class="container">
     <div class="schedule">'
 
@@ -194,7 +209,11 @@ $html += $orderedEventListHTML -replace '\x1b\[[0-9;]*[a-z]', ''
 <# SECTION B: TODAY'S DATE #>
 $html += '</div>
     <div class="todaydate">'
-$html += "$todayFormatted"
+
+<# Removed in preference of using javascript and moment.js #>
+# $html += "$todayFormatted"
+
+$html += '<span id="date-time"></span>'
 $html += '</div>
     <div class="numthiswk">'
 
@@ -213,8 +232,9 @@ $html += '</div>
     </div>'
 
 <# The following script block is for javascript on the page #>
-$html += '<script>document.getElementsByTagName("tr")[0].remove();
-    </script>'
+$html += '<script>document.getElementsByTagName("tr")[0].remove();'
+$html += "var dt = moment().format('dddd, MMMM Do');document.getElementById('date-time').innerHTML=dt;"
+$html += '</script>'
     
 $html += "</body></html>"
-$html | Out-File $PSScriptRoot/test.html
+$html | Out-File $PSScriptRoot/index.html
